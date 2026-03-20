@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  averageRating  Float     @default(0)
+  totalRatings   Int       @default(0)
+  hundredsCount  Int       @default(0)
+  ratings        Rating[]
+}
+
+model Artwork {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  finalScore  Float    @default(0)
+  ratingCount Int      @default(0)
+  ratings     Rating[]
+}
+
+model Rating {
+  id            String   @id @default(cuid())
+  userId        String
+  artworkId     String
+  rawScore      Int
+  modifiedScore Float
+  weight        Int      @default(1)
+  user          User     @relation(fields: [userId], references: [id])
+  artwork       Artwork  @relation(fields: [artworkId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, artworkId])
+}
