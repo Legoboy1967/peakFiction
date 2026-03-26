@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { calculateModifiedScore, calculateArtworkFinalScore } from '@/lib/ratingEngine'
 import { revalidatePath } from 'next/cache'
 
-export async function submitRating(artworkTitle: string, rawScore: number, userId: string) {
+export async function submitRating(artworkTitle: string, rawScore: number, userId: string, media?: string) {
   // 1. Find or create user
   let user = await prisma.user.findUnique({
     where: { id: userId }
@@ -24,7 +24,12 @@ export async function submitRating(artworkTitle: string, rawScore: number, userI
 
   if (!artwork) {
     artwork = await prisma.artwork.create({
-      data: { title: artworkTitle }
+      data: { title: artworkTitle, media: media || null }
+    });
+  } else if (media && !artwork.media) {
+    artwork = await prisma.artwork.update({
+      where: { id: artwork.id },
+      data: { media }
     });
   }
 
