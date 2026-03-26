@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import RatingForm from './components/RatingForm'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 function getScoreColor(score: number): string {
   if (score >= 80) return 'text-score-high'
   if (score >= 50) return 'text-score-mid'
